@@ -2,17 +2,16 @@ from paddleocr import PaddleOCR
 
 class OCRManager:
     def __init__(self):
-        # Configuration is handled here during initialization
-        # use_angle_cls=True handles the orientation logic previously triggered by cls=True
-        self.ocr = PaddleOCR(use_angle_cls=True, lang='en')
+        # use_angle_cls=True is essential for shipping labels that might be rotated
+        # Set show_log=False to keep the Streamlit logs clean
+        self.ocr = PaddleOCR(use_angle_cls=True, lang='en', show_log=False)
 
     def get_text_with_confidence(self, img_path):
-        # Call ocr without the 'cls' keyword argument to fix the TypeError
-        result = self.ocr.ocr(img_path)
+        # In this stable version, cls=True is supported here
+        result = self.ocr.ocr(img_path, cls=True)
         
         full_results = []
-        # PaddleOCR 3.x returns results in a nested list format
-        if result and isinstance(result, list) and result[0] is not None:
+        if result and result[0]:
             for line in result[0]:
                 text = line[1][0]
                 confidence = line[1][1]
